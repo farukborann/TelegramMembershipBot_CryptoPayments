@@ -1,0 +1,44 @@
+{
+  "DatabaseConnectionString": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TelegramMembershipBotDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+  "IsDatabaseEnsureCreated": true,
+  "ResetDatabaseFirstStart": false,
+  "CoinpaymentsApiUrl": "https://www.coinpayments.net/api.php",
+  "CoinpaymentsApiPublicKey": "d0c0164ec3893faa76878cb58e29a4e8cfb6b247076e14315c40157c24f66812",
+  "CoinpaymentsApiPrivateKey": "Fa7a8d69B29d9103bB72d8F9ef88a5f44cB5ce7d263098e0D1dD7B76e5d1Bb21",
+  "CoinpaymentsBuyerEmail": "omerboran63@gmail.com",
+  "EnableLitecoinTestPayment": true,
+  "TelegramBotToken": "5414532737:AAEc15Z1F3pBKLH3V3qeGV7L16wS6wg39Uw",
+  "TelegramChannelId": "-1001719752033",
+  "UpdatePaymentsAndUsersTickMunite": 1,
+
+  "MainPriceType": "USD",
+  "CCNewsMembershipPrice": 10,
+  "CCNewsMembershipPeriot": "1 Month",
+  "CCNewsMembershipPeriotDays": 30.0,
+  "CELBMembershipPrice": 279,
+  "CELBMembershipPeriot": "Lifetime",
+
+  "TelegramCCNewsButtonText": "CC-NEWS",
+  "TelegramCELBButtonText": "Crypto Exchange Listing Bot (CELB)",
+  "TelegramCCNewsBotButtonText": "CC-NEWS Bot",
+
+  "TelegramCCNewsDescriptionText": "We follow the breaking news around the world about cryptocurrencies from all premium and free sources and filter the headlines that will market-moving and present them to you.",
+  "TelegramCELBDescriptionText": "Crypto Exchange Listing Bot; if a coin & token is listed on Coinbase, Robinhood, UPbit or Grayscale, it will automatically transaction open \"in seconds\" with API's from your Binance or FTX account.",
+  "TelegramCCNewsBotDescriptionText": "Automatically opening trades to the headlines that market-moving.\nComing Soon.",
+
+  "TelegramBackButtonText": "<< Back",
+  "TelegramStatusButtonText": "Status",
+
+  "TelegramStatusNotMemberMessage": "You do not currently have a subscription to any package.",
+  "TelegramStatusMemberMessage": "Your current subscription *[expirydate]* will continue to date.\nnIf you want to extend it, you can buy one more package now.\nThe duration of the package you receive will be added to your remaining time.",
+
+  "TelegramWelcomeText": "Welcome to CC-News",
+  "TelegramCCNewsMembershipButtonText": "*[price]* *[pricetype]* / *[periot]*",
+  "TelegramCELBMembershipButtonText": "*[price]* *[pricetype]* / *[periot]*",
+
+  "TelegramPaymentText": "Lütfen aşşağıdaki adrese *[amount]* *[coin]* gönderin (10 USD) : \n\n*[adress]*\n\nBu adrese sadece *[time]* saat içerisinde ödeme yaparsanız kabul edilecektir.\n\nÖdeme durumunuzu [bu linkten](*[statuslink]*) takip edebilirsiniz.",
+  "TelegramPaymentSuccessText": "*Ödeme başarıyla tamamlandı*\n\nGruba katılmak için aşşağıdaki davet linkini kullanın.(Eğer zaten gruptaysanız gerek yok.)\n\nGruba sadece ödeme yapılan telegram hesabı kabul edilecektir.\nLink tek kullanımlıktır.",
+
+  "TelegramCCNewsPaymentSuccessText": "Invite Link : *[inviteLink]*\nContact:https://t.me/ccnewsrise",
+  "TelegramCELBPaymentSuccessText": "Google Form : https://forms.gle/6DwDHayn4dt8G7hm9"
+}

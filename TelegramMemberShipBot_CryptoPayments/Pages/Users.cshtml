@@ -1,0 +1,56 @@
+﻿@page
+@model TelegramMemberShipBot_CryptoPayments.Pages.UsersModel
+@{
+}
+
+<h2>Kullanıcılar</h2>
+@*/lib/bootstrap/dist/css/bootstrap.min.css*@
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Username")
+            </th>
+            <th>
+                @Html.DisplayName("FullName")
+            </th>
+            <th>
+                @Html.DisplayName("End Date")
+            </th>
+            <th>
+                @Html.DisplayName("Last Payment Amount")
+            </th>
+            <th>
+                @Html.DisplayName("Last Payment Coin")
+            </th>
+            <th>
+                @Html.DisplayName("User ID")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in new Database().GetUsers())
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.EndDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.LastPaymentAmountCoin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.LastPaymentCoinName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.UserId)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

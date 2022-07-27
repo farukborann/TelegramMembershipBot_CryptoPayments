@@ -1,0 +1,68 @@
+﻿@page
+@model TelegramMemberShipBot_CryptoPayments.Pages.PaymentsModel
+@{
+}
+
+<h2>Son 100 Ödeme</h2>
+ 
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Transaction Id")
+            </th>
+            <th>
+                @Html.DisplayName("Payment Adress")
+            </th>
+            <th>
+                @Html.DisplayName("Expiry Date")
+            </th>
+            <th>
+                @Html.DisplayName("Last Status")
+            </th>
+            <th>
+                @Html.DisplayName("Amount Coin")
+            </th>
+            <th>
+                @Html.DisplayName("Coin")
+            </th>
+            <th>
+                @Html.DisplayName("Username")
+            </th>
+            <th>
+                @Html.DisplayName("Full Name")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in new Database().GetLast100Payment())
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.TransactionId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.PaymentAdress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.ExpiryDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.LastStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.AmountCoin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Coin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.FullName)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
