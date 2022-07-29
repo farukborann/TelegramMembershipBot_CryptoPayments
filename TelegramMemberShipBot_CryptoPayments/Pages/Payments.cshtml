@@ -1,9 +1,14 @@
 ﻿@page
+@using TelegramMemberShipBot_CryptoPayments.Database
+@using TelegramMemberShipBot_CryptoPayments.Models
 @model TelegramMemberShipBot_CryptoPayments.Pages.PaymentsModel
 @{
+    DatabaseContext DbContext = new();
+    List<Payment> Payments = DbContext.GetLast100Payment();
+    DbContext.Dispose();
 }
 
-<h2>Son 100 Ödeme</h2>
+<h2 style="text-align: center;">Last Created 100 Payment</h2>
  
 <table class="table">
     <thead>
@@ -35,32 +40,32 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in new Database().GetLast100Payment())
+        @foreach (var Payment in Payments)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => user.TransactionId)
+                    @Html.DisplayFor(modelItem => Payment.TransactionId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.PaymentAdress)
+                    @Html.DisplayFor(modelItem => Payment.PaymentAdress)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.ExpiryDate)
+                    @Html.DisplayFor(modelItem => Payment.ExpiryDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.LastStatus)
+                    @Html.DisplayFor(modelItem => Payment.LastStatus)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.AmountCoin)
+                    @Html.DisplayFor(modelItem => Payment.AmountCoin)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.Coin)
+                    @Html.DisplayFor(modelItem => Payment.Coin)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.Username)
+                    @Html.DisplayFor(modelItem => Payment.Username)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.FullName)
+                    @Html.DisplayFor(modelItem => Payment.FullName)
                 </td>
             </tr>
         }

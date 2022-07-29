@@ -1,10 +1,13 @@
 ﻿@page
+@using TelegramMemberShipBot_CryptoPayments.Database
 @model TelegramMemberShipBot_CryptoPayments.Pages.UsersModel
 @{
+    DatabaseContext DbContext = new();
+    var Users = DbContext.GetUsers();
+    DbContext.Dispose();
 }
 
-<h2>Kullanıcılar</h2>
-@*/lib/bootstrap/dist/css/bootstrap.min.css*@
+<h2 style="text-align: center;">Users</h2>
 <table class="table">
     <thead>
         <tr>
@@ -23,32 +26,26 @@
             <th>
                 @Html.DisplayName("Last Payment Coin")
             </th>
-            <th>
-                @Html.DisplayName("User ID")
-            </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in new Database().GetUsers())
+        @foreach (var User in Users)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => user.Username)
+                    @Html.DisplayFor(modelItem => User.Username)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.FullName)
+                    @Html.DisplayFor(modelItem => User.FullName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.EndDate)
+                    @Html.DisplayFor(modelItem => User.EndDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.LastPaymentAmountCoin)
+                    @Html.DisplayFor(modelItem => User.LastPaymentAmountCoin)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => user.LastPaymentCoinName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => user.UserId)
+                    @Html.DisplayFor(modelItem => User.LastPaymentCoinName)
                 </td>
             </tr>
         }

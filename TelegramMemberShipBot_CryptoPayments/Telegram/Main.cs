@@ -4,6 +4,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 using TelegramMemberShipBot_CryptoPayments.Coinpayments;
 using TelegramMemberShipBot_CryptoPayments.Models;
+using TelegramMemberShipBot_CryptoPayments.Database;
 
 namespace TelegramMemberShipBot_CryptoPayments.Telegram
 {
@@ -42,69 +43,90 @@ namespace TelegramMemberShipBot_CryptoPayments.Telegram
 
         static async Task UpdateUsersTick()
         {
-			Console.WriteLine("Kontrol başladı.");
-			//Ban expired users
-			List<Models.User> Expired_Users = new Database().GetExpiredUsers();
-			using (List<Models.User>.Enumerator enumerator = Expired_Users.GetEnumerator())
-			{
-				while (enumerator.MoveNext())
-				{
-					TelegramBotClientExtensions.BanChatMemberAsync(userId: enumerator.Current.UserId, botClient: Bot, chatId: new ChatId(SettingsManager.TelegramChannelId));
-				}
-			}
+			Console.WriteLine("| Check started |");
+            try
+            {
+				DatabaseContext DbContext = new();
 
-			//Check uncomplated payments
-			var Database = new Database();
-			List<Payment> Last8HoursPayments = Database.GetPendingPayments();
-			for (int i = 0; i < Last8HoursPayments.Count; i += 25)
-			{
-				//Parse payments to has 25 elemetent lists and call api.
-				//After getting response check payments are finished or cancelled.
-				//Update database
-
-				//Call api and get response
-				int count = 25;
-				if (i + 25 > Last8HoursPayments.Count)
-				{
-					count = Last8HoursPayments.Count - i;
-				}
-				List<Payment> get_payments_list = Last8HoursPayments.GetRange(i, count);
-				ReceiveTransactionsInfoResponse transactions = await Coinpayments.Main.Api.GetTransactionInfoMultiAsync(new ReceiveTransactionsInfo
-				{
-					TransactionIds = string.Join("|", get_payments_list.Select((Payment x) => x.TransactionId.ToString()))
-				});
-				int j = 0;
-
-				//Check payments
-				while (i < transactions.Result.Count)
-				{
-					KeyValuePair<string, ReceiveTransactionInfoResult> trans = transactions.Result.ElementAt(j);
-					if (trans.Value.Status > 0)
-					{
-						//Update database
-                        Database.ComplatePayment(Last8HoursPayments[i + j]);
-						Bot.SendTextMessageAsync(Last8HoursPayments[i + j].UserId, SettingsManager.TelegramPaymentSuccessText);
-						if (Last8HoursPayments[i + j].ISCCNews)
-						{
-							TelegramBotClient bot = Bot;
-							ChatId chatId = new(SettingsManager.TelegramChannelId);
-							ChatInviteLink invite = await bot.CreateChatInviteLinkAsync(chatId, null, null, 1);
-
-							Bot.UnbanChatMemberAsync(new ChatId(SettingsManager.TelegramChannelId), Last8HoursPayments[i + j].UserId);
-							Bot.SendTextMessageAsync(Last8HoursPayments[i + j].UserId, SettingsManager.TelegramCCNewsPaymentSuccessText(invite.InviteLink));
-						}
-						else
-						{
-							Bot.SendTextMessageAsync(Last8HoursPayments[i + j].UserId, SettingsManager.TelegramCELBPaymentSuccessText);
-						}
-					}//else if cancelled
-					else if (trans.Value.Status == -1)
+				//Ban expired users
+				List<Models.User> Expired_Users = DbContext.GetExpiredUsers();
+				foreach (Models.User ExpiredUser in Expired_Users)
+                {
+                    try
                     {
-						Database.CancelPayment(Last8HoursPayments[i + j]);
+						await Bot.UnbanChatMemberAsync(userId: ExpiredUser.UserId, chatId: new ChatId(SettingsManager.TelegramChannelId));
+						DbContext.DelUser(ExpiredUser);
+						Console.WriteLine($"Banned User : {ExpiredUser.FullName}");
                     }
-					j++;
+                    catch (Exception ex)
+                    {
+						Console.WriteLine($"Error to Ban User : {ex.Message}");
+					}
+
 				}
+
+				//Check uncomplated payments
+				List<Payment> PendingPayments = DbContext.GetPendingPayments();
+				for (int i = 0; i < PendingPayments.Count; i += 25)
+				{
+					//Parse payments to has 25 elemetent lists and call api.Because api gives per one time max 25 payments info.
+					//After getting response check payments are finished or cancelled.
+					//Update database
+
+					//Call api and get response
+					List<Payment> Payments_List = PendingPayments.GetRange(i, (i + 25 > PendingPayments.Count ? PendingPayments.Count - i : 25)); // if i + 25 > pending_payments.count => get elements from i to last
+					ReceiveTransactionsInfoResponse Transactions = await Coinpayments.Main.Api.GetTransactionInfoMultiAsync(new ReceiveTransactionsInfo
+					{
+						TransactionIds = string.Join("|", Payments_List.Select((Payment x) => x.TransactionId.ToString()))
+					});
+
+					//Check payments
+					for (int j = 0; j < Transactions.Result.Count; j++)
+                    {
+						var _Transaction = PendingPayments[i + j];// Transaction from database
+						var Transaction = Transactions.Result.ElementAt(j).Value; // Transaction info from api => KeyValuePair<string, ReceiveTransactionInfoResult>().Value
+
+						if (Transaction.StatusText == "Complete") // If transection success
+                        {
+							DbContext.ComplatePayment(_Transaction, Transaction.StatusText);
+							await Bot.SendTextMessageAsync(_Transaction.UserId, SettingsManager.TelegramPaymentSuccessText);
+
+							if (_Transaction.ISCCNews)
+							{
+                                try
+                                {
+									ChatId chatId = new(SettingsManager.TelegramChannelId);
+									ChatInviteLink invite = await Bot.CreateChatInviteLinkAsync(chatId, null, null, 1);
+
+									await Bot.SendTextMessageAsync(_Transaction.UserId, SettingsManager.TelegramCCNewsPaymentSuccessText(invite.InviteLink));
+                                }
+                                catch (Exception ex)
+                                {
+									Console.WriteLine($"Error to Add User : {ex.Message}");
+								}
+							}
+							else
+							{
+								await Bot.SendTextMessageAsync(_Transaction.UserId, SettingsManager.TelegramCELBPaymentSuccessText);
+							}
+							Console.WriteLine($"Payment Complated : {_Transaction.FullName} | {_Transaction.TransactionId}");
+						}
+						else if (Transaction.StatusText == "Cancelled / Timed Out") // If transaction cancelled
+						{
+							DbContext.CancelPayment(_Transaction);
+							Console.WriteLine($"Payment Cancelled : {_Transaction.FullName} | {_Transaction.TransactionId}");
+						}
+					}
+				}
+				DbContext.SaveChanges();
+				DbContext.Dispose();
 			}
+            catch (Exception ex)
+            {
+				Console.WriteLine($"Unexpected Error : {ex.Message}");
+            }
+
+			Console.WriteLine("| Check Over |");
 		}
-    }
+	}
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zbwpwWfE8O26//46dgAQ0d258Xke03m7cyE2bE0xrw7JH3upYgokFH4TLuZvmCKnijps+lxqLP5x+ElRSqyG6Q==",
+  "dgSpecHash": "nLCdU2kP2tyoIQ4MYDMpQ6C+mpKGRGGKtP2PEcjhCqyhE5UYcyyFppSFkZyFxvcRSnchTSlOfX41C48FFQeLfQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMemberShipBot_CryptoPaymentsEski\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj",
+  "projectFilePath": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMembershipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kapsul.konya\\.nuget\\packages\\flurl\\3.0.6\\flurl.3.0.6.nupkg.sha512",
     "C:\\Users\\kapsul.konya\\.nuget\\packages\\flurl.http\\3.2.4\\flurl.http.3.2.4.nupkg.sha512",

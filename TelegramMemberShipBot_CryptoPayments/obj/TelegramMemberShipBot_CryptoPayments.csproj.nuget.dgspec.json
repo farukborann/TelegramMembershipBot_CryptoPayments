@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMemberShipBot_CryptoPaymentsEski\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj": {}
+    "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMembershipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMemberShipBot_CryptoPaymentsEski\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj": {
+    "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMembershipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMemberShipBot_CryptoPaymentsEski\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj",
+        "projectUniqueName": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMembershipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj",
         "projectName": "TelegramMemberShipBot_CryptoPayments",
-        "projectPath": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMemberShipBot_CryptoPaymentsEski\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj",
+        "projectPath": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMembershipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments.csproj",
         "packagesPath": "C:\\Users\\kapsul.konya\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMemberShipBot_CryptoPaymentsEski\\TelegramMemberShipBot_CryptoPayments\\obj\\",
+        "outputPath": "C:\\Users\\kapsul.konya\\Desktop\\Workspace\\TelegramMembershipBot_CryptoPayments\\TelegramMemberShipBot_CryptoPayments\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\kapsul.konya\\AppData\\Roaming\\NuGet\\NuGet.Config",

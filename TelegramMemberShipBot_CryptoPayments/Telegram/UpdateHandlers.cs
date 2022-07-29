@@ -5,6 +5,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramMemberShipBot_CryptoPayments.Models;
 using TelegramMemberShipBot_CryptoPayments.Coinpayments;
+using TelegramMemberShipBot_CryptoPayments.Database;
 
 namespace TelegramMemberShipBot_CryptoPayments.Telegram
 {
@@ -72,7 +73,7 @@ namespace TelegramMemberShipBot_CryptoPayments.Telegram
         }
 
         //Answer Methods
-        static async Task<Message> DefaultMessage(ITelegramBotClient botClient, Message message)
+        static async Task DefaultMessage(ITelegramBotClient botClient, Message message)
         {
             ReplyKeyboardMarkup replyKeyboardMarkup = new(
                 new[] { new KeyboardButton[] { 
@@ -81,35 +82,35 @@ namespace TelegramMemberShipBot_CryptoPayments.Telegram
                     SettingsManager.TelegramCcNewsBotButtonText } })
             { ResizeKeyboard = true };
 
-            return await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
                                                         text: SettingsManager.TelegramWelcomeText,
                                                         replyMarkup: replyKeyboardMarkup);
         }
         
-        static async Task<Message> CCNewsMessage(ITelegramBotClient botClient, Message message)
+        static async Task CCNewsMessage(ITelegramBotClient botClient, Message message)
         {
             InlineKeyboardMarkup replyKeyboardMarkup = new( new[] { 
                 new [] { InlineKeyboardButton.WithCallbackData(SettingsManager.TelegramCcNewsMembershipButtonText, "membership_ccnews") },
                 new [] { InlineKeyboardButton.WithCallbackData(SettingsManager.TelegramStatusButtonText, "status_ccnews") } });
 
-            return await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
                                                         text: SettingsManager.TelegramCcNewsDescriptionText,
                                                         replyMarkup: replyKeyboardMarkup);
         }
         
-        static async Task<Message> CELBMessage(ITelegramBotClient botClient, Message message)
+        static async Task CELBMessage(ITelegramBotClient botClient, Message message)
         {
             InlineKeyboardMarkup replyKeyboardMarkup = new(new[] {
                 new [] { InlineKeyboardButton.WithCallbackData(SettingsManager.TelegramCelbMembershipButtonText, "membership_celb") }  });
 
-            return await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
                                                         text: SettingsManager.TelegramCelbDescriptionText,
                                                         replyMarkup: replyKeyboardMarkup);
         }
         
-        static async Task<Message> CCNewsBotMessage(ITelegramBotClient botClient, Message message)
+        static async Task CCNewsBotMessage(ITelegramBotClient botClient, Message message)
         {
-            return await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
                                                         text: SettingsManager.TelegramCcNewsBotDescriptionText);
         }
 
@@ -170,7 +171,9 @@ namespace TelegramMemberShipBot_CryptoPayments.Telegram
         
         static async Task<Message> CCNewsStatusMessage(ITelegramBotClient botClient, Message message)
         {
-            var user = new Database().GetCCNewsStatus(message.Chat.Id);
+            var DbContext = new DatabaseContext();
+            var user = DbContext.GetCCNewsStatus(message.Chat.Id);
+            DbContext.Dispose();
             string? sendMessage = user.UserId == -1 ? SettingsManager.TelegramStatusNotMemberMessage : SettingsManager.TelegramStatusMemberMessage(user.EndDate);
 
             return await botClient.SendTextMessageAsync(chatId: message.Chat.Id, parseMode: ParseMode.Markdown,
@@ -200,39 +203,43 @@ namespace TelegramMemberShipBot_CryptoPayments.Telegram
         }
 
         //Clicked Payment Buttons Method
-        static Task StartPayment(ITelegramBotClient botClient, CallbackQuery query)
+        static async Task StartPayment(ITelegramBotClient botClient, CallbackQuery query)
         {
-            Task.Run(async () => 
+            try
             {
                 var coinName = query.Data.Split("_")[1].ToUpper();
                 var price = query.Data.StartsWith("ccnews_") ? SettingsManager.CcNewsMembershipPrice : SettingsManager.CelbMembershipPrice;
 
-                var trans = await Coinpayments.Main.Api.CreateTransactionAsync(new ReceiveTransaction() 
-                { 
-                    Amount=price, 
-                    BuyerEmail=SettingsManager.CoinpaymentsBuyerEmail, 
-                    Currency1= SettingsManager.MainPriceType, 
-                    Currency2 = coinName 
+                var trans = await Coinpayments.Main.Api.CreateTransactionAsync(new ReceiveTransaction()
+                {
+                    Amount = price,
+                    BuyerEmail = SettingsManager.CoinpaymentsBuyerEmail,
+                    Currency1 = SettingsManager.MainPriceType,
+                    Currency2 = coinName
                 });
 
-                var pay = new Payment() 
-                {   
-                    TransactionId = trans.Result.TransactionId, 
-                    AmountCoin = trans.Result.Amount, 
-                    AmountMain = price, 
-                    Coin = coinName, 
-                    CreateDate = DateTime.Now, 
-                    ExpiryDate = DateTime.UnixEpoch.AddSeconds(trans.Result.Timeout),
+                var pay = new Payment()
+                {
+                    TransactionId = trans.Result.TransactionId,
+                    AmountCoin = trans.Result.Amount,
+                    AmountMain = price,
+                    Coin = coinName,
+                    CreateDate = DateTime.Now,
+                    ExpiryDate = DateTime.Now.AddSeconds(trans.Result.Timeout).ToLocalTime(),
                     ComplateDate = null,
-                    LastStatus = 0,
+                    LastStatus = "Waiting for buyer funds...",
                     ISCCNews = query.Data.StartsWith("ccnews_"),
-                    PaymentAdress = trans.Result.Address, 
-                    UserId = query.Message.Chat.Id, 
-                    Username = query.Message.Chat.Username, 
+                    PaymentAdress = trans.Result.Address,
+                    UserId = query.Message.Chat.Id,
+                    Username = query.Message.Chat.Username,
                     FullName = query.Message.Chat.FirstName + " " + query.Message.Chat.LastName
                 };
 
-                new Database().AddPayment(pay);
+                //Save payment to database
+                var DbContext = new DatabaseContext();
+                DbContext.AddPayment(pay);
+                DbContext.SaveChanges();
+                DbContext.Dispose();
 
                 //Send message and qr
                 await botClient.SendTextMessageAsync(chatId: query.Message.Chat.Id, parseMode: ParseMode.Markdown,
@@ -240,8 +247,11 @@ namespace TelegramMemberShipBot_CryptoPayments.Telegram
 
                 await botClient.SendPhotoAsync(chatId: query.Message.Chat.Id, parseMode: ParseMode.Markdown,
                                                             photo: trans.Result.QrCodeUrl);
-            });
-            return Task.Delay(0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during creating payment : {ex.Message}");
+            }
         }
     }
 }

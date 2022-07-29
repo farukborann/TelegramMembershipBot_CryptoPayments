@@ -20,7 +20,7 @@
 
 		public DateTime? ComplateDate { get; set; }
 
-		public short LastStatus { get; set; }
+		public string LastStatus { get; set; }
 
 		public bool ISCCNews { get; set; }
 
